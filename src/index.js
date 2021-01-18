@@ -1,73 +1,14 @@
-const fs = require('fs');
+#! /usr/bin/env node
+
 const path = require('path');
 const inquirer = require('inquirer');
+const p5Questions = require('./p5qs');
 
 const projectDir = path.basename(process.cwd());
 
+let answers = {};
+
 console.log('Create a new JavaScript project');
-
-function p5Questions() {
-    const p5Qs = [
-        {
-            type: 'checkbox',
-            name: 'includes',
-            message: 'Which elements would you like to include?',
-            choices: [
-                { name: 'P5', checked: true },
-                { name: 'P5 DOM' },
-                { name: 'P5 Sound' },
-                { name: 'Matter JS' },
-                { name: 'ML5' },
-            ],
-            default: [true, false, false, false, false],
-        },
-    ];
-    inquirer.prompt(p5Qs).then((answers) => {
-        console.log(JSON.stringify(answers));
-    });
-}
-
-function otherQuestions() {
-    const otherQs = [
-        {
-            type: 'list',
-            name: 'projectType',
-            message: 'What type of project is this?',
-            choices: ['P5', 'Other browser based', 'Node', 'Node & Browser'],
-        },
-    ];
-    inquirer.prompt(otherQs).then((answers) => {
-        console.log(JSON.stringify(answers));
-    });
-}
-
-function nodeQuestions() {
-    const nodeQs = [
-        {
-            type: 'list',
-            name: 'projectType',
-            message: 'What type of project is this?',
-            choices: ['P5', 'Other browser based', 'Node', 'Node & Browser'],
-        },
-    ];
-    inquirer.prompt(nodeQs).then((answers) => {
-        console.log(JSON.stringify(answers));
-    });
-}
-
-function nodeBrowserQuestions() {
-    const nodeBrowswerQs = [
-        {
-            type: 'list',
-            name: 'projectType',
-            message: 'What type of project is this?',
-            choices: ['P5', 'Other browser based', 'Node', 'Node & Browser'],
-        },
-    ];
-    inquirer.prompt(nodeBrowswerQs).then((answers) => {
-        console.log(JSON.stringify(answers));
-    });
-}
 
 const questions = [
     {
@@ -84,27 +25,13 @@ const questions = [
     },
 ];
 
-inquirer.prompt(questions).then((answers) => {
-    switch (answers.projectType) {
-    case 'P5':
-        p5Questions();
-        break;
-    case 'Other browser based':
-        otherQuestions();
-        break;
-    case 'Node':
-        nodeQuestions();
-        break;
-    case 'Node & Browser':
-        nodeBrowserQuestions();
-        break;
-    default:
-        break;
-    }
-});
+async function runQuestions() {
+    answers = await inquirer.prompt(questions);
 
-// {
-//     type: 'confirm',
-//     name: 'eslintEnabled',
-//     message: 'Do you want to enable ESLint?',
-// },
+    if (answers.projectType === 'P5') {
+        answers = await p5Questions(answers);
+    }
+    console.log(`Answers: ${JSON.stringify(answers)}`);
+}
+
+runQuestions();
